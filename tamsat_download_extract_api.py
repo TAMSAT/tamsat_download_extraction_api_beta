@@ -1,7 +1,7 @@
 """
-Download TAMSAT rainfall estimates.
+TAMSAT download and extraction API source code.
 
-This script downloads TAMSAT rainfall estimates in netCDF format.
+Author: TAMSAT (tamsat@reading.ac.uk)
 """
 
 
