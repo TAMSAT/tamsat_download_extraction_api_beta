@@ -460,6 +460,115 @@ def download_files(files_to_download, localdata_dir):
                 print(' Unable to download file: %s' % url_file)
 
 
+def check_lonlat(lon, lat):
+    """Check that supplied lon and lat are valid.
+    
+    Parameters
+    ----------
+    lon : float
+        Longitude.
+    lat : float
+        Latitude.
+    
+    Returns
+    -------
+    bool
+        True or False.
+    
+    """
+    if (lon < -19.0125) or (lon > 51.975):
+        print('Supplied longitude value is outside of TAMSAT domain, must be between -19.0125 and 51.975')
+        lon_check = False
+    else:
+        lon_check = True
+    
+    if (lat < -35.9625) or (lat > 38.025):
+        print('Supplied latitude value is outside of TAMSAT domain, must be between -35.9625 and 38.025')
+        lat_check = False
+    else:
+        lat_check = True
+    
+    if all(x for x in [lon_check, lat_check]):
+        return True
+    else:
+        return False
+        
+    
+def check_dates(startdate, enddate):
+    """Check that supplied dates are valid.
+    
+    Parameters
+    ----------
+    startdate : str
+        Start date of rainfall estimate (format: YYYY-MM-DD).
+    enddate : str
+        End date of the rainfall estimate (format: YYYY-MM-DD).
+    
+    Returns
+    -------
+    bool
+        True or False.
+    
+    """
+    try:
+        dt.strptime(startdate, "%Y-%m-%d")
+        startdate_check = True
+    except ValueError:
+        print("'startdate' is incorrect. It should be YYYY-MM-DD")
+        startdate_check = False
+    
+    try:
+        dt.strptime(enddate, "%Y-%m-%d")
+        enddate_check = True
+    except ValueError:
+        print("'enddate' is incorrect. It should be YYYY-MM-DD")
+        enddate_check = False
+    
+    if all(x for x in [startdate_check, enddate_check]):
+        return True
+    else:
+        return False
+
+
+def check_domain(N, S, W, E):
+    """Check that supplied coordinates are valid.
+    
+    Parameters
+    ----------
+    N, S, W, E : float
+        North, South, West, East coordinates.
+    
+    """
+    if (W < -19.0125) or (W > 51.975):
+        print('Supplied "W" value is outside of TAMSAT domain, must be between -19.0125 and 51.975')
+        W_check = False
+    else:
+        W_check = True
+    
+    if (E < -19.0125) or (E > 51.975):
+        print('Supplied "E" value is outside of TAMSAT domain, must be between -19.0125 and 51.975')
+        E_check = False
+    else:
+        E_check = True
+    
+    if (N < -35.9625) or (N > 38.025):
+        print('Supplied "N" value is outside of TAMSAT domain, must be between -35.9625 and 38.025')
+        N_check = False
+    else:
+        N_check = True
+    
+    if (S < -35.9625) or (S > 38.025):
+        print('Supplied "S" value is outside of TAMSAT domain, must be between -35.9625 and 38.025')
+        S_check = False
+    else:
+        S_check = True
+    
+    if all(x for x in [W_check, E_check, N_check, S_check]):
+        return True
+    else:
+        return False
+
+
 def download(request):
     """Handle download tasks.
     
@@ -519,6 +628,13 @@ def extract(request):
             
             lon = np.float(request['longitude'])
             lat = np.float(request['latitude'])
+            
+            # Check if lon/lat values are valid
+            if check_lonlat(lon, lat):
+                pass
+            else:
+                return
+            
             print('Extracting point TAMSAT rainfall estimates for longitude: %s and latitude: %s' % (lon, lat))
             
         elif (extract_type == 'area_average') or (extract_type == 'domain'):
@@ -537,18 +653,51 @@ def extract(request):
             if 'E' not in request:
                 print('Warning! "E" not supplied.')
                 return
-                
+            
             N = np.float(request['N'])
             S = np.float(request['S'])
             W = np.float(request['W'])
             E = np.float(request['E'])
+
+            # Check if N/S/W/E values are valid
+            if check_lonlat(N, S, W, E):
+                pass
+            else:
+                return
+            
             print('Extracting %s TAMSAT rainfall estimates for N: %s, S: %s, W: %s and E: %s' % (extract_type, str(N), str(S), str(W), str(E)))
         
         timestep = request['timestep']
+        if 'resolution' not in request:
+            resolution = 0.25
+        else:
+            resolution = request['resolution']
+        
+        # Check if timestep and resolution values are valid
+        if check_input_values(timestep, resolution):
+            pass
+        else:
+            return
+        
         startdate = request['start_date']
         enddate = request['end_date']
-        resolution = request['resolution']
+        
+        # Check if start and end dates are valid
+        if check_dates(startdate, enddate):
+            pass
+        else:
+            return
+        
         version = request['version']
+        
+        # Check if version is valid
+        allowed_versions = [3.1]
+        if np.float(version) in allowed_versions:
+            pass
+        else:
+            print('"version" not recognised. Current version(s) available: 3.1')
+            return
+        
         localdata_dir = request['localdata_dir']
         
         # List expected files
@@ -616,6 +765,7 @@ def extract(request):
                     print('Warning! Unable to create file: %s' % fname_full)
         else:
             print('No files found, please check input parameters or that TAMSAT data exists for given parameters.')
+            print('By default, 0.25 degree resolution data are used for extraction unless "resolution" argument is supplied.')
     else:
         print('Warning! "extract_type" not recognised. Excepted values are: "point", "area_average" or "domain".')
 
