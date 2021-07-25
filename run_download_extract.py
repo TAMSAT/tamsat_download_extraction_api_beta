@@ -18,11 +18,11 @@ from tamsat_download_extract_api import download, extract
 
 # Specify local data directory - this must be changed to a suitable
 # path on your machine
-localdata_dir = '/gws/nopw/j04/tamsat/tamsat/scripts/api/data'
+localdata_dir = '/gws/nopw/j04/tamsat/tamsat/scripts/download_extract_api/data'
 
 # Download TAMSAT files
 download({
-    "timestep": 'daily',
+    "timestep": 'dekadal',
     "resolution": 0.25,
     "start_date": '2021-06-01',
     "end_date": '2021-06-30',
@@ -36,9 +36,9 @@ extract({
     "extract_type": 'point',
     "longitude": 22.73,
     "latitude": -3.51,
-    "timestep": 'pentadal',
+    "timestep": 'dekadal',
     "start_date": '2021-06-01',
-    "end_date": '2021-06-15',
+    "end_date": '2021-06-30',
     "version": 3.1,
     "localdata_dir": localdata_dir
     })
@@ -51,7 +51,7 @@ extract({
     "S": 20.73,
     "W": 4.0,
     "E": 5.0,
-    "timestep": 'monthly',
+    "timestep": 'dekadal',
     "start_date": '2021-06-01',
     "end_date": '2021-06-30',
     "version": 3.1,
@@ -66,7 +66,7 @@ extract({
     "S": 20.73,
     "W": 4.0,
     "E": 30.0,
-    "timestep": 'daily',
+    "timestep": 'dekadal',
     "start_date": '2021-06-01',
     "end_date": '2021-06-30',
     "version": '3.1',
