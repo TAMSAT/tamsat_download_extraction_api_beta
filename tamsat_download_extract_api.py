@@ -660,7 +660,7 @@ def extract(request):
             E = np.float(request['E'])
 
             # Check if N/S/W/E values are valid
-            if check_lonlat(N, S, W, E):
+            if check_domain(N, S, W, E):
                 pass
             else:
                 return
