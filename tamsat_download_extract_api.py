@@ -320,11 +320,13 @@ def rfe_fname_constructor(timestep, url, version, date, degrade_tag, resolution)
     elif timestep == 'seasonal-anomalies':
         fname_str = f'rfe{yyyy}_{mm}_seas_anom.v{version}.nc'
     
-    fullpath = os.path.join(url, 'v' + version, timestep, str(yyyy), str(mm), fname_str)
+    #fullpath = os.path.join(url, 'v' + version, timestep, str(yyyy), str(mm), fname_str)
+    fullpath = url + '/' + 'v' + version + '/' + timestep + '/' + str(yyyy) + '/' + str(mm) + '/' + fname_str
     
     if degrade_tag == 1:
         fname_str = fname_str.split(f'.v{version}')[0] + '_' + str(resolution) + f'.v{version}' + fname_str.split(f'.v{version}')[1]
-        fullpath = os.path.join(url, 'v' + version, timestep, str(resolution), str(yyyy), str(mm), fname_str)
+        #fullpath = os.path.join(url, 'v' + version, timestep, str(resolution), str(yyyy), str(mm), fname_str)
+        fullpath = url + '/' + 'v' + version + '/' + timestep + '/' + str(resolution) + '/' + str(yyyy) + '/' + str(mm) + '/' + fname_str
     
     return fullpath
 
