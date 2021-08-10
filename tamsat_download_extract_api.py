@@ -320,12 +320,10 @@ def rfe_fname_constructor(timestep, url, version, date, degrade_tag, resolution)
     elif timestep == 'seasonal-anomalies':
         fname_str = f'rfe{yyyy}_{mm}_seas_anom.v{version}.nc'
     
-    #fullpath = os.path.join(url, 'v' + version, timestep, str(yyyy), str(mm), fname_str)
     fullpath = url + '/' + 'v' + version + '/' + timestep + '/' + str(yyyy) + '/' + str(mm) + '/' + fname_str
     
     if degrade_tag == 1:
         fname_str = fname_str.split(f'.v{version}')[0] + '_' + str(resolution) + f'.v{version}' + fname_str.split(f'.v{version}')[1]
-        #fullpath = os.path.join(url, 'v' + version, timestep, str(resolution), str(yyyy), str(mm), fname_str)
         fullpath = url + '/' + 'v' + version + '/' + timestep + '/' + str(resolution) + '/' + str(yyyy) + '/' + str(mm) + '/' + fname_str
     
     return fullpath
@@ -359,9 +357,9 @@ def get_filenames(remoteurl, daterange, timestep, resolution, version):
         degrade_tag = 1
     
     if degrade_tag == 0:
-        dataurl = os.path.join(remoteurl, 'data')
+        dataurl = remoteurl + '/' + 'data'
     else:
-        dataurl = os.path.join(remoteurl, 'data_degraded')
+        dataurl = remoteurl + '/' + 'data_degraded'
     
     files_to_download = []
     if timestep == 'daily':
@@ -704,7 +702,7 @@ def extract(request):
         
         # List expected files
         daterange = determine_daterange(startdate, enddate)
-        flist_expect = get_filenames(os.path.join(localdata_dir, 'tamsat/rfe'), daterange, timestep, resolution, version)
+        flist_expect = get_filenames(localdata_dir + '/tamsat/rfe', daterange, timestep, resolution, version)
         
         # List files that exist
         flist_exist = [f for f in flist_expect if os.path.exists(f)]
@@ -738,7 +736,7 @@ def extract(request):
                 if extract_type == 'point':
                     df = ds.to_dataframe().round(4)
                     fname = 'TAMSATv' + str(version) + '_' + timestep + '_' + str(resolution) + '_' + str(lon) + '_' + str(lat) + '_' + startdate + '_' + enddate + '.csv'
-                    fname_full = os.path.join(localdata_dir, 'extracted_data', extract_type, fname)
+                    fname_full = localdata_dir + '/extracted_data/' + extract_type + '/' + fname
                     if not os.path.exists(os.path.dirname(fname_full)):
                         os.makedirs(os.path.dirname(fname_full))
                     
@@ -747,7 +745,7 @@ def extract(request):
                 elif extract_type == 'area_average':
                     df = ds.to_dataframe().round(4)
                     fname = 'TAMSATv' + str(version) + '_' + timestep + '_' + str(resolution) + '_' + str(N) + '_' + str(S) + '_' + str(W) + '_' + str(E) + '_' + startdate + '_' + enddate + '.csv'
-                    fname_full = os.path.join(localdata_dir, 'extracted_data', extract_type, fname)
+                    fname_full = localdata_dir + '/extracted_data/' + extract_type + '/' + fname
                     if not os.path.exists(os.path.dirname(fname_full)):
                         os.makedirs(os.path.dirname(fname_full))
                     
@@ -755,7 +753,7 @@ def extract(request):
                     
                 elif extract_type == 'domain':
                     fname = 'TAMSATv' + str(version) + '_' + timestep + '_' + str(resolution) + '_' + str(N) + '_' + str(S) + '_' + str(W) + '_' + str(E) + '_' + startdate + '_' + enddate + '.nc'
-                    fname_full = os.path.join(localdata_dir, 'extracted_data', extract_type, fname)
+                    fname_full = localdata_dir + '/extracted_data/' + extract_type + '/' + fname
                     if not os.path.exists(os.path.dirname(fname_full)):
                         os.makedirs(os.path.dirname(fname_full))
                     
